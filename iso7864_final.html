@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISO 7864 — Cannula Bonding Force Certificate</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #fff; font-family: 'IBM Plex Sans', sans-serif; }
+
+  .cert-wrap { background: #fff; color: #1a1a1a; max-width: 720px; margin: 0 auto; border: 1px solid #e0e0e0; }
+
+  .cert-header { background: #0d2137; padding: 24px 28px 20px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .cert-header-left .company { font-size: 11px; font-weight: 500; letter-spacing: 2px; color: #7fb3d3; text-transform: uppercase; margin-bottom: 4px; }
+  .cert-header-left .title { font-size: 18px; font-weight: 600; color: #fff; line-height: 1.2; }
+  .cert-header-left .subtitle { font-size: 11px; color: #7fb3d3; margin-top: 4px; }
+  .cert-header-right { text-align: right; }
+  .cert-header-right .iso-badge { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; padding: 6px 12px; font-size: 11px; font-weight: 500; color: #c8dff0; letter-spacing: 1px; display: inline-block; }
+  .cert-header-right .date-label { font-size: 10px; color: #5a8aaa; margin-top: 8px; }
+  .cert-header-right .date-val { font-size: 13px; font-weight: 500; color: #c8dff0; }
+
+  .result-banner { padding: 14px 28px; display: flex; align-items: center; gap: 12px; }
+  .result-banner.pass { background: #edf7f0; border-bottom: 2px solid #2d9e61; }
+  .result-banner.warn { background: #fffbea; border-bottom: 2px solid #d97706; }
+  .result-banner.fail { background: #fef2f2; border-bottom: 2px solid #dc2626; }
+  .result-icon { font-size: 22px; flex-shrink: 0; }
+  .result-text-main { font-size: 14px; font-weight: 600; }
+  .result-text-sub { font-size: 11px; margin-top: 1px; opacity: 0.8; }
+  .result-banner.pass .result-text-main,
+  .result-banner.pass .result-text-sub { color: #166534; }
+  .result-banner.warn .result-text-main,
+  .result-banner.warn .result-text-sub { color: #92400e; }
+  .result-banner.fail .result-text-main,
+  .result-banner.fail .result-text-sub { color: #991b1b; }
+
+  .cert-body { padding: 20px 28px; }
+  .section-label { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #999; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 0.5px solid #e8e8e8; }
+
+  .meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .meta-item { background: #f7f8fa; border-radius: 6px; padding: 10px 12px; }
+  .meta-item .label { font-size: 10px; font-weight: 500; color: #888; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 3px; }
+  .meta-item .value { font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'IBM Plex Mono', monospace; word-break: break-word; }
+  .meta-item .value.na { color: #aaa; }
+
+  .force-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .force-card { border: 1px solid #e8e8e8; border-radius: 8px; padding: 14px 16px; text-align: center; }
+  .force-card .fc-label { font-size: 10px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .force-card .fc-value { font-size: 28px; font-weight: 600; font-family: 'IBM Plex Mono', monospace; color: #0d2137; line-height: 1; }
+  .force-card .fc-unit { font-size: 13px; font-weight: 400; color: #555; }
+  .force-card.highlight-fail { border-color: #fca5a5; background: #fff5f5; }
+  .force-card.highlight-fail .fc-value { color: #dc2626; }
+  .force-card.highlight-warn { border-color: #fcd34d; background: #fffdf0; }
+  .force-card.highlight-warn .fc-value { color: #d97706; }
+  .force-card.highlight-pass { border-color: #86efac; background: #f0faf4; }
+  .force-card.highlight-pass .fc-value { color: #166534; }
+
+  .gauge-bar-wrap { margin-top: 16px; margin-bottom: 8px; }
+  .gauge-bar-labels { display: flex; justify-content: space-between; font-size: 9px; color: #aaa; font-family: 'IBM Plex Mono', monospace; margin-bottom: 3px; }
+  .gauge-bar-track { width: 100%; height: 8px; background: #e8e8e8; border-radius: 4px; position: relative; overflow: visible; }
+  .gauge-bar-segments { display: flex; height: 100%; border-radius: 4px; overflow: hidden; }
+  .gauge-bar-fail { background: #fca5a5; }
+  .gauge-bar-warn { background: #fcd34d; }
+  .gauge-bar-pass { background: #86efac; border-radius: 0 4px 4px 0; }
+  .gauge-marker { position: absolute; top: -5px; width: 3px; height: 18px; background: #0d2137; border-radius: 2px; transform: translateX(-50%); }
+  .gauge-marker-label { font-size: 9px; font-family: 'IBM Plex Mono', monospace; color: #0d2137; font-weight: 600; position: absolute; top: -18px; transform: translateX(-50%); white-space: nowrap; }
+  .gauge-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; font-size: 10px; color: #666; }
+  .gauge-legend-item { display: flex; align-items: center; gap: 4px; }
+  .gauge-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+  .iso-ref { background: #f0f4f8; border-left: 3px solid #0d2137; border-radius: 0 6px 6px 0; padding: 10px 14px; font-size: 11px; color: #444; margin-top: 16px; line-height: 1.6; }
+  .iso-ref strong { color: #0d2137; }
+
+  .extraction-warning { color: #dc2626; font-weight: 500; display: block; margin-top: 6px; padding-top: 6px; border-top: 1px solid #fca5a5; }
+
+  .comment-box { background: #fffbea; border: 1px solid #fde68a; border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #78350f; margin-top: 12px; line-height: 1.5; }
+
+  .cert-footer { background: #f7f8fa; border-top: 1px solid #e8e8e8; padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; }
+  .cert-footer .footer-label { font-size: 10px; color: #aaa; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
+  .cert-footer .operator-val { font-size: 12px; font-weight: 500; color: #555; font-family: 'IBM Plex Mono', monospace; }
+  .cert-footer .stamp { font-size: 10px; color: #aaa; text-align: right; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div id="rawData" style="display:none;">{Image_Analysis}</div>
+
+<div class="cert-wrap">
+
+  <div class="cert-header">
+    <div class="cert-header-left">
+      <div class="company" id="hSupplier">—</div>
+      <div class="title">Cannula Bonding Force<br>Test Certificate</div>
+      <div class="subtitle">Section 4.12 &amp; Annex E — ISO 7864:2016</div>
+    </div>
+    <div class="cert-header-right">
+      <div class="iso-badge">ISO 7864:2016</div>
+      <div class="date-label" style="margin-top:10px;">Test Date</div>
+      <div class="date-val" id="hDate">—</div>
+    </div>
+  </div>
+
+  <div class="result-banner" id="resultBanner">
+    <div class="result-icon" id="resultIcon">—</div>
+    <div>
+      <div class="result-text-main" id="resultMain">—</div>
+      <div class="result-text-sub" id="resultSub">—</div>
+    </div>
+  </div>
+
+  <div class="cert-body">
+
+    <div class="section-label">Sample Identification</div>
+    <div class="meta-grid">
+      <div class="meta-item">
+        <div class="label">Gauge</div>
+        <div class="value" id="mGauge">—</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Lot Number</div>
+        <div class="value" id="mLot">—</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Supplier</div>
+        <div class="value" id="mSupplier">—</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Operator</div>
+        <div class="value" id="mOperator" style="font-size:11px;">—</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Date</div>
+        <div class="value" id="mDate">—</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Comment</div>
+        <div class="value" id="mComment" style="font-size:11px;">—</div>
+      </div>
+    </div>
+
+    <div class="section-label">Maximum Load Results (Absolute Values)</div>
+
+    <div class="force-grid">
+      <div class="force-card" id="meanCard">
+        <div class="fc-label">Mean Force</div>
+        <div class="fc-value"><span id="fMean">—</span> <span class="fc-unit">N</span></div>
+      </div>
+      <div class="force-card" id="minCard">
+        <div class="fc-label">Minimum Force</div>
+        <div class="fc-value"><span id="fMin">—</span> <span class="fc-unit">N</span></div>
+      </div>
+    </div>
+
+    <div class="gauge-bar-wrap">
+      <div class="gauge-bar-labels">
+        <span>0 N</span>
+        <span id="lblLimit">— N (ISO Min)</span>
+        <span id="lblWarn">— N (Warning)</span>
+        <span>100 N</span>
+      </div>
+      <div class="gauge-bar-track">
+        <div class="gauge-bar-segments">
+          <div class="gauge-bar-fail" id="barFail" style="height:100%; width:0%;"></div>
+          <div class="gauge-bar-warn" id="barWarn" style="height:100%; width:0%;"></div>
+          <div class="gauge-bar-pass" id="barPass" style="height:100%; width:0%;"></div>
+        </div>
+        <div class="gauge-marker" id="gaugeMarker" style="left:0%;">
+          <div class="gauge-marker-label" id="markerLabel">— N</div>
+        </div>
+      </div>
+      <div class="gauge-legend">
+        <div class="gauge-legend-item"><div class="gauge-legend-dot" style="background:#fca5a5;"></div> Below ISO limit</div>
+        <div class="gauge-legend-item"><div class="gauge-legend-dot" style="background:#fcd34d;"></div> Warning zone</div>
+        <div class="gauge-legend-item"><div class="gauge-legend-dot" style="background:#86efac;"></div> Very Good</div>
+        <div class="gauge-legend-item"><div class="gauge-legend-dot" style="background:#0d2137;width:3px;border-radius:2px;"></div> Minimum recorded</div>
+      </div>
+    </div>
+
+    <div class="iso-ref">
+      <strong>ISO 7864:2016 Table 2 — <span id="isoGauge">—</span>:</strong>
+      Minimum bonding force ≥ <strong id="isoLimit">—</strong>.
+      Internal warning zone: <span id="isoZone">—</span>.
+      Very Good: above <span id="isoVG">—</span>.
+      <span class="extraction-warning" id="extractionWarning" style="display:none;">
+        ⚠ Extraction Warning: Mean force is below 10 N — verify that the correct row
+        (Maximum Loads, not Friction Forces or Displacement) was read from the source
+        image before issuing any non-conformance report.
+      </span>
+    </div>
+
+    <div class="comment-box" id="commentBox" style="display:none;">
+      <strong>Comment:</strong> <span id="commentText">—</span>
+    </div>
+
+  </div>
+
+  <div class="cert-footer">
+    <div>
+      <div class="footer-label">Operator</div>
+      <div class="operator-val" id="fOperator">—</div>
+    </div>
+    <div class="stamp">
+      <div>Generated by QC System</div>
+      <div>ISO 7864:2016 · Section 4.12</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+
+  var raw = document.getElementById("rawData").textContent || "";
+
+  function extract(key) {
+    var re = new RegExp(key + "\\s*:\\s*(.+)", "i");
+    var m  = raw.match(re);
+    if (!m) return "N/A";
+    return m[1].trim().replace(/\s*N\s*$/i, "").trim();
+  }
+
+  var gauge    = extract("GAUGE");
+  var lot      = extract("LOT");
+  var date     = extract("DATE");
+  var operator = extract("OPERATOR");
+  var supplier = extract("SUPPLIER");
+  var comment  = extract("COMMENT");
+  var meanRaw  = extract("MEAN");
+  var minRaw   = extract("MINIMUM");
+  var result   = extract("RESULT");
+
+  var meanVal = Math.abs(parseFloat(meanRaw));
+  var minVal  = Math.abs(parseFloat(minRaw));
+
+  var limit, warnLimit, gaugeLabel;
+  if (gauge.indexOf("21") !== -1) {
+    limit = 44; warnLimit = 54;
+    gaugeLabel = "21G (0.8 mm OD)";
+  } else if (gauge.indexOf("23") !== -1) {
+    limit = 34; warnLimit = 44;
+    gaugeLabel = "23G (0.6 mm OD)";
+  } else if (gauge.indexOf("25") !== -1) {
+    limit = 25; warnLimit = 35;
+    gaugeLabel = "25G (0.5 mm OD)";
+  } else if (gauge.indexOf("27") !== -1) {
+    limit = 20; warnLimit = 30;
+    gaugeLabel = "27G (0.4 mm OD)";
+  } else {
+    limit = 0; warnLimit = 10;
+    gaugeLabel = gauge;
+  }
+
+  document.getElementById("hSupplier").textContent = supplier !== "N/A" ? supplier : "—";
+  document.getElementById("hDate").textContent     = date;
+
+  function fill(id, val) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = val;
+    if (val === "N/A" || val === "" || val === "—") el.classList.add("na");
+  }
+
+  fill("mGauge",    gaugeLabel);
+  fill("mLot",      lot);
+  fill("mSupplier", supplier);
+  fill("mOperator", operator);
+  fill("mDate",     date);
+  fill("mComment",  comment);
+  fill("fOperator", operator);
+
+  document.getElementById("fMean").textContent = isNaN(meanVal) ? meanRaw : meanVal.toFixed(2);
+  document.getElementById("fMin").textContent  = isNaN(minVal)  ? minRaw  : minVal.toFixed(2);
+
+  var banner  = document.getElementById("resultBanner");
+  var icon    = document.getElementById("resultIcon");
+  var main    = document.getElementById("resultMain");
+  var sub     = document.getElementById("resultSub");
+  var minCard = document.getElementById("minCard");
+
+  var isPass = result.indexOf("Very Good") !== -1 || result.indexOf("✅") !== -1;
+  var isWarn = !isPass && (result.indexOf("Warning") !== -1 || result.indexOf("⚠") !== -1);
+
+  if (isPass) {
+    banner.className  = "result-banner pass";
+    icon.textContent  = "✅";
+    main.textContent  = "Very Good — Exceeds Warning Zone";
+    sub.textContent   = gauge + " requires ≥ " + limit + " N  ·  Minimum recorded: " + minVal.toFixed(2) + " N";
+    minCard.className = "force-card highlight-pass";
+  } else if (isWarn) {
+    banner.className  = "result-banner warn";
+    icon.textContent  = "⚠️";
+    main.textContent  = "Accepted with Warning — Within Warning Zone";
+    sub.textContent   = gauge + " requires ≥ " + limit + " N  ·  Minimum recorded: " + minVal.toFixed(2) + " N";
+    minCard.className = "force-card highlight-warn";
+  } else {
+    banner.className  = "result-banner fail";
+    icon.textContent  = "❌";
+    main.textContent  = "Not Accepted — Below ISO Minimum Limit";
+    sub.textContent   = gauge + " requires ≥ " + limit + " N  ·  Minimum recorded: " + minVal.toFixed(2) + " N";
+    minCard.className = "force-card highlight-fail";
+  }
+
+  var scale = 100;
+  document.getElementById("barFail").style.width = (limit / scale * 100) + "%";
+  document.getElementById("barWarn").style.width = ((warnLimit - limit) / scale * 100) + "%";
+  document.getElementById("barPass").style.width = ((scale - warnLimit) / scale * 100) + "%";
+
+  var markerPct = Math.min(Math.max((minVal / scale) * 100, 0.5), 98);
+  document.getElementById("gaugeMarker").style.left  = markerPct + "%";
+  document.getElementById("markerLabel").textContent = minVal.toFixed(2) + " N";
+
+  document.getElementById("lblLimit").textContent  = limit + " N (ISO Min)";
+  document.getElementById("lblWarn").textContent   = warnLimit + " N (Warning)";
+  document.getElementById("isoGauge").textContent  = gaugeLabel;
+  document.getElementById("isoLimit").textContent  = limit + " N";
+  document.getElementById("isoZone").textContent   = limit + " N – " + warnLimit + " N";
+  document.getElementById("isoVG").textContent     = warnLimit + " N";
+
+  if (!isNaN(meanVal) && meanVal < 10) {
+    document.getElementById("extractionWarning").style.display = "block";
+  }
+
+  if (comment && comment !== "N/A") {
+    document.getElementById("commentBox").style.display = "block";
+    document.getElementById("commentText").textContent  = comment;
+  }
+
+})();
+</script>
+
+</body>
+</html>
