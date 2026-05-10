@@ -78,6 +78,13 @@
   .cert-footer .footer-label { font-size: 10px; color: #aaa; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
   .cert-footer .operator-val { font-size: 12px; font-weight: 500; color: #555; font-family: 'IBM Plex Mono', monospace; }
   .cert-footer .stamp { font-size: 10px; color: #aaa; text-align: right; line-height: 1.6; }
+ 
+  /* ── PRINT STYLES ── */
+  @media print {
+    body { margin: 0; }
+    .cert-wrap { border: none; max-width: 100%; }
+    .no-print { display: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -204,44 +211,32 @@
  
 </div>
  
+<!-- Print button — hidden when printing -->
+<div class="no-print" style="text-align:center; padding: 24px;">
+  <button onclick="window.print()" style="background:#0d2137; color:#fff; border:none; padding:12px 32px; border-radius:6px; font-size:14px; font-weight:500; cursor:pointer; font-family:'IBM Plex Sans',sans-serif;">
+    🖨 Print / Save as PDF
+  </button>
+</div>
+ 
 <script>
 (function () {
  
-  /* ── READ DATA FROM URL ?data= PARAMETER ── */
-  var raw = decodeURIComponent(
-    new URLSearchParams(window.location.search).get("data") || ""
-  );
+  /* ── READ INDIVIDUAL URL PARAMETERS ── */
+  var p = new URLSearchParams(window.location.search);
  
-  /* If no data, show warning and stop */
-  if (!raw || raw.trim() === "") {
-    document.getElementById("resultBanner").className    = "result-banner warn";
-    document.getElementById("resultIcon").textContent    = "⚠️";
-    document.getElementById("resultMain").textContent    = "No data received";
-    document.getElementById("resultSub").textContent     = "Open this page from your Glide app via the Construct URL column";
-    return;
-  }
+  var gauge    = p.get("gauge")    || "N/A";
+  var lot      = p.get("lot")      || "N/A";
+  var date     = p.get("date")     || "N/A";
+  var operator = p.get("operator") || "N/A";
+  var supplier = p.get("supplier") || "N/A";
+  var comment  = p.get("comment")  || "N/A";
+  var meanRaw  = p.get("mean")     || "0";
+  var minRaw   = p.get("minimum")  || "0";
+  var result   = p.get("result")   || "";
  
-  /* ── PARSER ── */
-  function extract(key) {
-    var re = new RegExp(key + "\\s*:\\s*(.+)", "i");
-    var m  = raw.match(re);
-    if (!m) return "N/A";
-    return m[1].trim().replace(/\s*N\s*$/i, "").trim();
-  }
- 
-  /* ── EXTRACT FIELDS ── */
-  var gauge    = extract("GAUGE");
-  var lot      = extract("LOT");
-  var date     = extract("DATE");
-  var operator = extract("OPERATOR");
-  var supplier = extract("SUPPLIER");
-  var comment  = extract("COMMENT");
-  var meanRaw  = extract("MEAN");
-  var minRaw   = extract("MINIMUM");
-  var result   = extract("RESULT");
- 
-  var meanVal = Math.abs(parseFloat(meanRaw));
-  var minVal  = Math.abs(parseFloat(minRaw));
+  /* Strip " N" unit suffix if present, take absolute value */
+  var meanVal = Math.abs(parseFloat(meanRaw.replace(/[^0-9.\-]/g, "")));
+  var minVal  = Math.abs(parseFloat(minRaw.replace(/[^0-9.\-]/g, "")));
  
   /* ── ISO LIMITS BY GAUGE ── */
   var limit, warnLimit, gaugeLabel;
@@ -263,7 +258,7 @@
   }
  
   /* ── FILL HEADER ── */
-  document.getElementById("hSupplier").textContent = supplier !== "N/A" ? supplier : "—";
+  document.getElementById("hSupplier").textContent = (supplier !== "N/A" && supplier !== "") ? supplier : "—";
   document.getElementById("hDate").textContent     = date;
  
   /* ── FILL META GRID ── */
@@ -339,7 +334,7 @@
   }
  
   /* ── COMMENT BOX ── */
-  if (comment && comment !== "N/A") {
+  if (comment && comment !== "N/A" && comment !== "") {
     document.getElementById("commentBox").style.display = "block";
     document.getElementById("commentText").textContent  = comment;
   }
@@ -349,4 +344,3 @@
  
 </body>
 </html>
- 
