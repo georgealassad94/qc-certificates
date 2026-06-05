@@ -82,6 +82,18 @@
   .cert-footer .stamp { font-size: 10px; color: #aaa; text-align: right; line-height: 1.6; }
   .cert-footer .footer-center { font-size: 10px; color: #666; text-align: center; font-style: italic; line-height: 1.6; }
  
+  /* ── NOT-A-REPORT ERROR SCREEN ── */
+  .error-wrap { max-width: 720px; margin: 40px auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+  .error-top { background: #fef2f2; border-bottom: 2px solid #dc2626; padding: 28px; text-align: center; }
+  .error-top .err-icon { font-size: 48px; line-height: 1; }
+  .error-top .err-title { font-size: 18px; font-weight: 700; color: #991b1b; margin-top: 12px; }
+  .error-top .err-sub { font-size: 13px; color: #b91c1c; margin-top: 6px; }
+  .error-body { padding: 24px 28px; color: #444; font-size: 13px; line-height: 1.7; }
+  .error-body strong { color: #0d2137; }
+  .error-body ul { margin: 10px 0 0 18px; }
+  .error-body li { margin-bottom: 6px; }
+  .error-foot { background: #f7f8fa; border-top: 1px solid #e8e8e8; padding: 14px 28px; font-size: 10px; color: #999; text-align: center; font-style: italic; }
+ 
   /* ── PRINT STYLES ── */
   /* ── SETTINGS & REPORT INFO SECTIONS ── */
   .meta-item .unit-hint { font-size: 9px; color: #bbb; font-family: 'IBM Plex Mono', monospace; margin-top: 2px; letter-spacing: 0.5px; }
@@ -97,6 +109,26 @@
 </style>
 </head>
 <body>
+ 
+<!-- NOT-A-REPORT ERROR SCREEN (hidden by default; shown only on invalid upload) -->
+<div class="error-wrap" id="notReportScreen" style="display:none;">
+  <div class="error-top">
+    <div class="err-icon">⛔</div>
+    <div class="err-title">This is not a Bonding Force Test Report</div>
+    <div class="err-sub" id="errSub">The uploaded image could not be recognized as a Cannula Bonding Force Statistics report.</div>
+  </div>
+  <div class="error-body">
+    <strong>No certificate was generated.</strong> The image you uploaded does not match the expected ISO 7864:2016 Bonding Force test report format, so no values were extracted and no pass/fail decision was made.
+    <ul>
+      <li>Make sure you upload a <strong>Cannula Bonding Force Statistics</strong> report.</li>
+      <li>The report should contain a statistics table with <strong>Maximum Loads</strong> and <strong>Friction Forces</strong> rows.</li>
+      <li>Check that the photo is clear, in focus, and shows the full report.</li>
+    </ul>
+  </div>
+  <div class="error-foot">
+    This system is designed for Afrimedical Use by Eng. George Al-Assad · ISO 7864:2016
+  </div>
+</div>
  
 <div class="cert-wrap">
  
@@ -309,6 +341,31 @@
   var stopAtLoad  = p.get("stop_at_load") || "N/A";
   var testTime    = p.get("test_time")    || "N/A";
  
+  /* ── NOT-A-REPORT GUARD ──
+     If the AI extraction rejected the image (wrong document / random photo),
+     it returns the token NOT_A_BONDING_FORCE_REPORT. We detect it from a
+     dedicated "error" parameter OR if the token leaked into result/gauge,
+     then show the error screen and stop — no certificate is rendered. */
+  var errorRaw = p.get("error") || "";
+  var TOKEN    = "NOT_A_BONDING_FORCE_REPORT";
+  var notReport =
+        errorRaw.indexOf(TOKEN) !== -1 ||
+        result.indexOf(TOKEN)   !== -1 ||
+        gauge.indexOf(TOKEN)    !== -1;
+ 
+  if (notReport) {
+    var certEl = document.querySelector(".cert-wrap");
+    if (certEl) certEl.style.display = "none";
+    var noPrintEl = document.querySelector(".no-print");
+    if (noPrintEl) noPrintEl.style.display = "none";
+    var screenEl = document.getElementById("notReportScreen");
+    if (screenEl) screenEl.style.display = "block";
+    /* If a custom message was passed, show it; otherwise keep the default */
+    var msg = errorRaw.replace(TOKEN, "").replace(/^[:\s-]+/, "").trim();
+    if (msg) document.getElementById("errSub").textContent = msg;
+    return; /* stop — do not render the certificate */
+  }
+ 
   /* Strip " N" unit suffix if present, take absolute value */
   var meanVal = Math.abs(parseFloat(meanRaw.replace(/[^0-9.\-]/g, "")));
   var minVal  = Math.abs(parseFloat(minRaw.replace(/[^0-9.\-]/g, "")));
@@ -442,3 +499,4 @@
  
 </body>
 </html>
+ 
