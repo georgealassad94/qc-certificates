@@ -263,8 +263,8 @@
 
   <div class="cert-footer">
     <div>
-      <div class="footer-label">Operator</div>
-      <div class="operator-val" id="fOperator">—</div>
+      <div class="footer-label">Conducted By</div>
+      <div class="operator-val" id="fConductedBy">—</div>
     </div>
     <div class="footer-center">
       This system is designed for Afrimedical Use<br>by Eng. George Al-Assad
@@ -294,6 +294,7 @@
   var lot         = p.get("lot")          || "N/A";
   var date        = p.get("date")         || "N/A";
   var operator    = p.get("operator")     || "N/A";
+  var conductedBy = p.get("conducted_by") || "N/A";
   var supplier    = p.get("supplier")     || "N/A";
   var comment     = p.get("comment")      || "N/A";
   var meanRaw     = p.get("mean")         || "0";
@@ -364,7 +365,7 @@
   fill("mComment",  comment);
   fill("mReportNo", reportNo);
   fill("mIsoRef",   "ISO 7864:2016 — Section 4.12 & Annex E");
-  fill("fOperator", operator);
+  fill("fConductedBy", conductedBy);
   fill("sLoadScale",  loadScale);
   fill("sTestLength", testLength);
   fill("sSpeed",      speed);
