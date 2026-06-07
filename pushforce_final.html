@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Certificate - Afrineedle | Push Force / Plunger Sliding Force Test | ISO 7886</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #fff; font-family: 'IBM Plex Sans', sans-serif; }
+
+  .cert-wrap { background: #fff; color: #1a1a1a; max-width: 720px; margin: 0 auto; border: 1px solid #e0e0e0; }
+
+  .cert-header { background: #fff; border-bottom: 3px solid #0d2137; padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; }
+  .cert-header-left { display: flex; align-items: center; gap: 14px; }
+  .cert-header-logo { height: 58px; width: auto; object-fit: contain; display: block; }
+  .cert-header-text .company { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: #0d2137; text-transform: uppercase; margin-bottom: 3px; }
+  .cert-header-text .title { font-size: 15px; font-weight: 700; color: #0d2137; line-height: 1.25; }
+  .cert-header-text .subtitle { font-size: 10px; color: #5a8aaa; margin-top: 3px; }
+  .cert-header-right { text-align: right; }
+  .cert-header-right .iso-badge { background: #0d2137; border: 1px solid #0d2137; border-radius: 4px; padding: 6px 12px; font-size: 10px; font-weight: 500; color: #fff; letter-spacing: 1px; display: inline-block; }
+  .cert-header-right .date-label { font-size: 10px; color: #5a8aaa; margin-top: 8px; }
+  .cert-header-right .date-val { font-size: 13px; font-weight: 500; color: #0d2137; }
+
+  .result-banner { padding: 14px 28px; display: flex; align-items: center; gap: 12px; }
+  .result-banner.pass { background: #edf7f0; border-bottom: 2px solid #2d9e61; }
+  .result-banner.warn { background: #fffbea; border-bottom: 2px solid #d97706; }
+  .result-banner.fail { background: #fef2f2; border-bottom: 2px solid #dc2626; }
+  .result-icon { font-size: 22px; flex-shrink: 0; }
+  .result-text-main { font-size: 14px; font-weight: 600; }
+  .result-text-sub { font-size: 11px; margin-top: 1px; opacity: 0.85; }
+  .result-banner.pass .result-text-main, .result-banner.pass .result-text-sub { color: #166534; }
+  .result-banner.warn .result-text-main, .result-banner.warn .result-text-sub { color: #92400e; }
+  .result-banner.fail .result-text-main, .result-banner.fail .result-text-sub { color: #991b1b; }
+
+  .cert-body { padding: 20px 28px; }
+  .section-label { font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #999; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 0.5px solid #e8e8e8; margin-top: 4px; }
+
+  .meta-item { background: #f7f8fa; border-radius: 6px; padding: 10px 12px; }
+  .meta-item .label { font-size: 10px; font-weight: 500; color: #888; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 3px; }
+  .meta-item .value { font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'IBM Plex Mono', monospace; word-break: break-word; }
+  .meta-item .value.na { color: #aaa; }
+  .meta-item .unit-hint { font-size: 9px; color: #bbb; font-family: 'IBM Plex Mono', monospace; margin-top: 2px; letter-spacing: 0.5px; }
+
+  .two-col-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 6px; }
+  .meta-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .settings-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+  .force-section-title { font-size: 11px; font-weight: 600; color: #0d2137; margin: 14px 0 8px; letter-spacing: 0.5px; }
+  .force-grid-3 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 6px; }
+  .force-card { border: 1px solid #e8e8e8; border-radius: 8px; padding: 12px 10px; text-align: center; }
+  .force-card .fc-label { font-size: 9px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+  .force-card .fc-value { font-size: 22px; font-weight: 600; font-family: 'IBM Plex Mono', monospace; color: #0d2137; line-height: 1; }
+  .force-card .fc-unit { font-size: 11px; font-weight: 400; color: #555; }
+  .force-card.lim-pass { border-color: #86efac; background: #f0faf4; }
+  .force-card.lim-pass .fc-value { color: #166534; }
+  .force-card.lim-fail { border-color: #fca5a5; background: #fff5f5; }
+  .force-card.lim-fail .fc-value { color: #dc2626; }
+  .fc-check { font-size: 8px; font-weight: 600; letter-spacing: 0.5px; margin-top: 4px; text-transform: uppercase; }
+  .fc-check.ok { color: #166534; }
+  .fc-check.bad { color: #dc2626; }
+  .fc-check.neutral { color: #aaa; }
+
+  .iso-ref { background: #f0f4f8; border-left: 3px solid #0d2137; border-radius: 0 6px 6px 0; padding: 10px 14px; font-size: 11px; color: #444; margin-top: 16px; line-height: 1.6; }
+  .iso-ref strong { color: #0d2137; }
+
+  .reason-box { background: #f7f8fa; border: 1px solid #e8e8e8; border-radius: 6px; padding: 12px 14px; font-size: 12px; color: #333; margin-top: 14px; line-height: 1.6; }
+  .reason-box .rb-label { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #999; margin-bottom: 5px; }
+
+  .discrepancy { background: #fffbea; border: 1px solid #fde68a; border-radius: 6px; padding: 10px 14px; font-size: 11px; color: #92400e; margin-top: 12px; line-height: 1.5; display: none; }
+  .discrepancy.show { display: block; }
+  .discrepancy strong { color: #78350f; }
+
+  .comment-box { background: #fffbea; border: 1px solid #fde68a; border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #78350f; margin-top: 12px; line-height: 1.5; }
+
+  .cert-footer { background: #f7f8fa; border-top: 1px solid #e8e8e8; padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; }
+  .cert-footer .footer-label { font-size: 10px; color: #aaa; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
+  .cert-footer .operator-val { font-size: 12px; font-weight: 500; color: #555; font-family: 'IBM Plex Mono', monospace; }
+  .cert-footer .stamp { font-size: 10px; color: #aaa; text-align: right; line-height: 1.6; }
+  .cert-footer .footer-center { font-size: 10px; color: #666; text-align: center; font-style: italic; line-height: 1.6; }
+
+  /* NOT-A-REPORT ERROR SCREEN */
+  .error-wrap { max-width: 720px; margin: 40px auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+  .error-top { background: #fef2f2; border-bottom: 2px solid #dc2626; padding: 28px; text-align: center; }
+  .error-top .err-icon { font-size: 48px; line-height: 1; }
+  .error-top .err-title { font-size: 18px; font-weight: 700; color: #991b1b; margin-top: 12px; }
+  .error-top .err-sub { font-size: 13px; color: #b91c1c; margin-top: 6px; }
+  .error-body { padding: 24px 28px; color: #444; font-size: 13px; line-height: 1.7; }
+  .error-body strong { color: #0d2137; }
+  .error-body ul { margin: 10px 0 0 18px; }
+  .error-body li { margin-bottom: 6px; }
+  .error-foot { background: #f7f8fa; border-top: 1px solid #e8e8e8; padding: 14px 28px; font-size: 10px; color: #999; text-align: center; font-style: italic; }
+
+  @media (max-width: 600px) {
+    .settings-grid { grid-template-columns: repeat(2, 1fr); }
+    .force-grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .two-col-grid { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { margin: 0; }
+    .cert-wrap { border: none; max-width: 100%; }
+    .no-print { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NOT-A-REPORT ERROR SCREEN (hidden by default) -->
+<div class="error-wrap" id="notReportScreen" style="display:none;">
+  <div class="error-top">
+    <div class="err-icon">⛔</div>
+    <div class="err-title">This is not a Push Force Test Report</div>
+    <div class="err-sub" id="errSub">The uploaded image could not be recognized as a Plunger Sliding / Push Force Statistics report.</div>
+  </div>
+  <div class="error-body">
+    <strong>No certificate was generated.</strong> The uploaded image does not match the expected ISO 7886 Push Force test report format, so no values were extracted and no pass/fail decision was made.
+    <ul>
+      <li>Make sure you upload a <strong>Plunger Sliding Force / Push Force Statistics</strong> report.</li>
+      <li>The report should contain a statistics table with <strong>Maximum Loads</strong> and <strong>Friction Forces</strong> rows and a force-vs-length graph.</li>
+      <li>Check that the photo is clear, in focus, and shows the full report including the graph.</li>
+    </ul>
+  </div>
+  <div class="error-foot">
+    This system is designed for Afrimedical Use by Eng. George Al-Assad · ISO 7886-1:2017 / 7886-3:2020
+  </div>
+</div>
+
+<div class="cert-wrap">
+
+  <div class="cert-header">
+    <div class="cert-header-left">
+      <img class="cert-header-logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIbGNtcwIQAABtbnRyUkdCIFhZWiAH4gADABQACQAOAB1hY3NwTVNGVAAAAABzYXdzY3RybAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWhhbmSdkQA9QICwPUB0LIGepSKOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAAF9jcHJ0AAABDAAAAAx3dHB0AAABGAAAABRyWFlaAAABLAAAABRnWFlaAAABQAAAABRiWFlaAAABVAAAABRyVFJDAAABaAAAAGBnVFJDAAABaAAAAGBiVFJDAAABaAAAAGBkZXNjAAAAAAAAAAV1UkdCAAAAAAAAAAAAAAAAdGV4dAAAAABDQzAAWFlaIAAAAAAAAPNUAAEAAAABFslYWVogAAAAAAAAb6AAADjyAAADj1hZWiAAAAAAAABilgAAt4kAABjaWFlaIAAAAAAAACSgAAAPhQAAtsRjdXJ2AAAAAAAAACoAAAB8APgBnAJ1A4MEyQZOCBIKGAxiDvQRzxT2GGocLiBDJKwpai5+M+s5sz/WRldNNlR2XBdkHWyGdVZ+jYgskjacq6eMstu+mcrH12Xkd/H5////2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAFAAUADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD+/iiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKzbTV9Mv7zULCzvra5vdJkih1K2hlV5bKWeJZ4Y7hASUaSFlkUHkqc8ZIrSqpwnTfLUhKEnGMlGcXFuM4qcJWaT5ZwlGcXtKMlJNppmdKrSrRc6NSnVgp1KbnSnGpFVKVSVKrByi2uelVhOnUjfmhUhKEkpRaRRRRUmgUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABXmHxe+I1l8MPBWoeIZvLk1CT/QNCs2wTe6vcRyG2j2ZBaKFY3ubgjOyCFzgnAPp9flT+0z8Qz43+IVxpVm+dD8G+dpFn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GeD/ABR4B+Esvh7S2spPBHhHxtcaXd+L9H0p1mZpI/Et3oul3etXd8bu/wBQu7RLm5u5J3lkf6QooA8t8PfBP4UeFLz4q3/h3wLoOkXnxw1ubxJ8Wp7SCRX8ea7c6BZ+FrjU9e3SsJ7qXw9p9lpLvEIQ1pbRIV3KGr5d8Ef8Evv2AfhxoU3hnwT+y18NPD+gT23i+zfSLa31iayWy8feGE8GeMrOCG81e5W2s/EXheNNG1G1t/KgktFG2NJR5lfelFAH59j/AIJU/wDBO7/hWGl/Bl/2S/hTN8M9E8dJ8StH8KXNhql1a6X41WG2tpdZsL241WXVbVb61s7W01TTIb9NH1ezhW01TT7u3LRH2X41fsXfss/tFal8MNX+NHwT8G+O9S+C07XHwpu7+C+0+TwG7SaXIU8PDRL7S0s7cNoulBbTa9qiWMESwiNSh+n6KAPjxf8Agn7+xeml3mif8M4/DV9Iv9C0jwzeabNpM09ncaDoPxPk+NGj6ZJBNdSJ9msPinNL43hAAf8AtuR5nZ4mMNdxoH7JH7NnhXxbd+PPDvwd8H6P4wvpPixPd6/Y2lxFfzy/HO/0LVPi47t9qMZbx7qHhnQLvXcRgTTaVatD5G0hvouigD4h8f8A/BNz9hj4o+FPg94H8ffs1fDvxJ4U/Z/0u50T4MaLdQatb23w70m9udPvLuw8OvYapaXFvbXF1pOnTSxyzThntISeAQdv4b/8E/f2K/hD8Zde/aG+HH7NXwr8LfG7xNd6lqGs/E2z8PR3PiufUNakMur6hbajqMt42mX+psWF/e6WlldXcbNDNK8TMh+w6KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//2Q==" alt="Afrimedical Logo" />
+      <div class="cert-header-text">
+        <div class="company" id="hSupplier">—</div>
+        <div class="title">Test Certificate - Afrineedle Syringe — Push Force / Plunger Sliding Force Test</div>
+        <div class="subtitle">Annex B — ISO 7886-1:2017 &amp; ISO 7886-3:2020</div>
+      </div>
+    </div>
+    <div class="cert-header-right">
+      <div class="iso-badge">ISO 7886</div>
+      <div class="date-label" style="margin-top:10px;">Test Date</div>
+      <div class="date-val" id="hDate">—</div>
+    </div>
+  </div>
+
+  <div class="result-banner" id="resultBanner">
+    <div class="result-icon" id="resultIcon">—</div>
+    <div>
+      <div class="result-text-main" id="resultMain">—</div>
+      <div class="result-text-sub" id="resultSub">—</div>
+    </div>
+  </div>
+
+  <div class="cert-body">
+
+    <div class="section-label">Report Information</div>
+    <div class="two-col-grid">
+      <div class="meta-grid-2">
+        <div class="meta-item">
+          <div class="label">Report / Analytical Ref. No.</div>
+          <div class="value" id="mReportNo">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="label">ISO Reference</div>
+          <div class="value" id="mIsoRef" style="font-size:10px;">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="label">Date of Test</div>
+          <div class="value" id="mDate">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="label">Operator</div>
+          <div class="value" id="mOperator" style="font-size:11px;">—</div>
+        </div>
+      </div>
+      <div class="meta-grid-2">
+        <div class="meta-item">
+          <div class="label">Product / Type</div>
+          <div class="value" id="mType" style="font-size:11px;">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="label">Supplier</div>
+          <div class="value" id="mSupplier">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="label">Batch / Lot No.</div>
+          <div class="value" id="mLot">—</div>
+        </div>
+        <div class="meta-item">
+          <div class="label">Comment</div>
+          <div class="value" id="mComment" style="font-size:11px;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:14px;">Test Settings</div>
+    <div class="settings-grid">
+      <div class="meta-item">
+        <div class="label">Load Scale</div>
+        <div class="value" id="sLoadScale">—</div>
+        <div class="unit-hint">N</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Test Length</div>
+        <div class="value" id="sTestLength">—</div>
+        <div class="unit-hint">mm</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Speed</div>
+        <div class="value" id="sSpeed">—</div>
+        <div class="unit-hint">mm/min</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Start Friction</div>
+        <div class="value" id="sStartFriction">—</div>
+        <div class="unit-hint">%</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Stop Friction</div>
+        <div class="value" id="sStopFriction">—</div>
+        <div class="unit-hint">%</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Testing Machine ID</div>
+        <div class="value" id="sMachineId">—</div>
+        <div class="unit-hint">&nbsp;</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Calibration Date</div>
+        <div class="value" id="sCalibDate">—</div>
+        <div class="unit-hint">&nbsp;</div>
+      </div>
+    </div>
+
+    <div class="section-label">Force Results (Absolute Values)</div>
+
+    <div class="force-section-title">Breakloose — Maximum Loads Row</div>
+    <div class="force-grid-3">
+      <div class="force-card" id="cardBlMean">
+        <div class="fc-label">Mean</div>
+        <div class="fc-value"><span id="fBlMean">—</span> <span class="fc-unit">N</span></div>
+        <div class="fc-check neutral" id="chkBlMean">&nbsp;</div>
+      </div>
+      <div class="force-card" id="cardBlMax">
+        <div class="fc-label">Maximum</div>
+        <div class="fc-value"><span id="fBlMax">—</span> <span class="fc-unit">N</span></div>
+        <div class="fc-check neutral" id="chkBlMax">&nbsp;</div>
+      </div>
+      <div class="force-card" id="cardBlStdev">
+        <div class="fc-label">Std. Dev.</div>
+        <div class="fc-value"><span id="fBlStdev">—</span> <span class="fc-unit">N</span></div>
+        <div class="fc-check neutral" id="chkBlStdev">&nbsp;</div>
+      </div>
+      <div class="force-card" style="background:#fafbfc;">
+        <div class="fc-label">Applied Limit</div>
+        <div class="fc-value" style="font-size:15px;" id="blLimitLabel">—</div>
+        <div class="fc-check neutral">&nbsp;</div>
+      </div>
+    </div>
+
+    <div class="force-section-title">Continuous Push — Friction Forces Row</div>
+    <div class="force-grid-3">
+      <div class="force-card" id="cardPfMean">
+        <div class="fc-label">Mean</div>
+        <div class="fc-value"><span id="fPfMean">—</span> <span class="fc-unit">N</span></div>
+        <div class="fc-check neutral" id="chkPfMean">&nbsp;</div>
+      </div>
+      <div class="force-card" id="cardPfMax">
+        <div class="fc-label">Maximum</div>
+        <div class="fc-value"><span id="fPfMax">—</span> <span class="fc-unit">N</span></div>
+        <div class="fc-check neutral" id="chkPfMax">&nbsp;</div>
+      </div>
+      <div class="force-card" id="cardPfMin">
+        <div class="fc-label">Minimum</div>
+        <div class="fc-value"><span id="fPfMin">—</span> <span class="fc-unit">N</span></div>
+        <div class="fc-check neutral" id="chkPfMin">&nbsp;</div>
+      </div>
+      <div class="force-card" id="cardPfStdev">
+        <div class="fc-label">Std. Dev.</div>
+        <div class="fc-value"><span id="fPfStdev">—</span> <span class="fc-unit">N</span></div>
+        <div class="fc-check neutral" id="chkPfStdev">&nbsp;</div>
+      </div>
+    </div>
+
+    <div class="iso-ref">
+      <strong>ISO 7886 — Applied Limit Set (<span id="isoSizeClass">—</span>):</strong>
+      <span id="isoLimitText">—</span><br>
+      <strong>Std. Dev. internal QC bands:</strong> Very Good ≤ 0.50 N · Warning 0.50–0.80 N · Not Accepted &gt; 0.80 N (either row).
+    </div>
+
+    <div class="discrepancy" id="discrepancyBox">
+      <strong>⚠ Cross-check note:</strong> <span id="discrepancyText"></span>
+    </div>
+
+    <div class="reason-box">
+      <div class="rb-label">Assessment Reason</div>
+      <span id="reasonText">—</span>
+    </div>
+
+    <div class="comment-box" id="commentBox" style="display:none;">
+      <strong>Comment:</strong> <span id="commentText">—</span>
+    </div>
+
+  </div>
+
+  <div class="cert-footer">
+    <div>
+      <div class="footer-label">Conducted By</div>
+      <div class="operator-val" id="fConductedBy">—</div>
+    </div>
+    <div class="footer-center">
+      This system is designed for Afrimedical Use<br>by Eng. George Al-Assad
+    </div>
+    <div class="stamp">
+      <div>Generated by QC AI System</div>
+      <div>ISO 7886-1:2017 / 7886-3:2020</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="no-print" style="text-align:center; padding: 24px;">
+  <button onclick="window.print()" style="background:#0d2137; color:#fff; border:none; padding:12px 32px; border-radius:6px; font-size:14px; font-weight:500; cursor:pointer; font-family:'IBM Plex Sans',sans-serif;">
+    🖨 Print / Save as PDF
+  </button>
+</div>
+
+<script>
+(function () {
+
+  var p = new URLSearchParams(window.location.search);
+  function g(k, d) { var v = p.get(k); return (v === null || v === "") ? (d === undefined ? "N/A" : d) : v; }
+  function num(s) { var n = Math.abs(parseFloat(String(s).replace(/[^0-9.\-]/g, ""))); return isNaN(n) ? NaN : n; }
+
+  /* ── READ PARAMETERS ── */
+  var type        = g("type");
+  var lot         = g("lot");
+  var date        = g("date");
+  var operator    = g("operator");
+  var conductedBy = g("conducted_by");
+  var supplier    = g("supplier");
+  var comment     = g("comment");
+  var result      = g("result", "");
+  var reason      = g("reason", "");
+  var reportNo    = g("report_no");
+  var machineId   = g("machine_id");
+  var calibDate   = g("calib_date");
+  var loadScale   = g("load_scale");
+  var testLength  = g("test_length");
+  var speed       = g("speed");
+  var startFric   = g("start_friction");
+  var stopFric    = g("stop_friction");
+  var errorRaw    = g("error", "");
+
+  var blMean  = num(g("bl_mean", "0"));
+  var blMax   = num(g("bl_max", "0"));
+  var blStdev = num(g("bl_stdev", "0"));
+  var pfMean  = num(g("pf_mean", "0"));
+  var pfMax   = num(g("pf_max", "0"));
+  var pfMin   = num(g("pf_min", "0"));
+  var pfStdev = num(g("pf_stdev", "0"));
+
+  /* ── NOT-A-REPORT GUARD ── */
+  var TOKEN = "NOT_A_PUSH_FORCE_REPORT";
+  var notReport = errorRaw.indexOf(TOKEN) !== -1 || result.indexOf(TOKEN) !== -1 || type.indexOf(TOKEN) !== -1;
+  if (notReport) {
+    var certEl = document.querySelector(".cert-wrap");
+    if (certEl) certEl.style.display = "none";
+    var npEl = document.querySelector(".no-print");
+    if (npEl) npEl.style.display = "none";
+    document.getElementById("notReportScreen").style.display = "block";
+    var msg = errorRaw.replace(TOKEN, "").replace(/^[:\s-]+/, "").trim();
+    if (msg) document.getElementById("errSub").textContent = msg;
+    return;
+  }
+
+  /* ── SIZE DETECTION (from TYPE, e.g. "5ml Luer Slip", "2ml Syringe") ── */
+  var capM = type.match(/([\d.]+)\s*m\s*l/i) || type.match(/([\d.]+)\s*m/i);
+  var capacity = capM ? parseFloat(capM[1]) : NaN;
+  var sizeKnown = !isNaN(capacity);
+  var isSmall = sizeKnown && capacity < 2;   /* < 2 ml → ISO 7886-3:2020 */
+  /* default to >=2 ml limit set when size unknown */
+
+  /* ── INDEPENDENT NUMERIC RE-VALIDATION (forces + std dev only) ──
+     Curve-shape criteria cannot be verified here; the AI verdict governs the banner.
+     This block independently checks the parts that ARE numeric. */
+  var checks = [];            /* {id, pass, label} */
+  var limitText, sizeLabel, blLimitLabel;
+
+  function mark(id, pass, neutral) {
+    var el = document.getElementById(id);
+    var card = document.getElementById("card" + id.substring(3)); /* chkBlMean -> cardBlMean */
+    if (neutral) { el.className = "fc-check neutral"; el.textContent = "—"; return; }
+    el.className = "fc-check " + (pass ? "ok" : "bad");
+    el.textContent = pass ? "WITHIN LIMIT" : "EXCEEDS LIMIT";
+    if (card) card.className = "force-card " + (pass ? "lim-pass" : "lim-fail");
+  }
+
+  if (isSmall) {
+    sizeLabel = "< 2 ml (ISO 7886-3:2020, Annex B Table B.1)";
+    var fMaxLimit = Math.max(2 * pfMean, pfMean + 1.5);
+    var fMinLimit = Math.min(0.5 * pfMean, pfMean - 1.5);
+    blLimitLabel = "Fs \u2264 10 N";
+    limitText =
+      "Initial breakloose Fs (Maximum Loads Mean) \u2264 10 N; " +
+      "continuous mean F (Friction Mean) \u2264 9 N; " +
+      "Friction Max \u2264 " + fMaxLimit.toFixed(2) + " N; " +
+      "Friction Min \u2265 " + fMinLimit.toFixed(2) + " N.";
+    var c1 = blMean <= 10;  mark("chkBlMean", c1); checks.push(c1);
+    mark("chkBlMax", false, true);
+    var c2 = pfMean <= 9;   mark("chkPfMean", c2); checks.push(c2);
+    var c3 = pfMax  <= fMaxLimit; mark("chkPfMax", c3); checks.push(c3);
+    var c4 = pfMin  >= fMinLimit; mark("chkPfMin", c4); checks.push(c4);
+  } else {
+    sizeLabel = (sizeKnown ? "\u2265 2 ml" : "\u2265 2 ml (size not detected — default)") + " (ISO 7886-1:2017)";
+    blLimitLabel = "\u2264 20 N";
+    limitText =
+      "Initial breakloose force (Maximum Loads Maximum) \u2264 20 N; " +
+      "continuous push force (Friction Forces Maximum) \u2264 10 N.";
+    var d1 = blMax <= 20; mark("chkBlMax", d1); checks.push(d1);
+    mark("chkBlMean", false, true);
+    var d2 = pfMax <= 10; mark("chkPfMax", d2); checks.push(d2);
+    mark("chkPfMean", false, true);
+    mark("chkPfMin", false, true);
+  }
+
+  /* Std Dev checks (both rows) */
+  var maxStdev = Math.max(isNaN(blStdev) ? 0 : blStdev, isNaN(pfStdev) ? 0 : pfStdev);
+  function stdevMark(id, v) {
+    var el = document.getElementById(id);
+    var card = document.getElementById("card" + id.substring(3));
+    if (isNaN(v)) { el.className = "fc-check neutral"; el.textContent = "—"; return; }
+    if (v <= 0.50) { el.className = "fc-check ok"; el.textContent = "\u2264 0.50"; if (card) card.className = "force-card lim-pass"; }
+    else if (v <= 0.80) { el.className = "fc-check"; el.style.color = "#d97706"; el.textContent = "0.50\u20130.80"; }
+    else { el.className = "fc-check bad"; el.textContent = "> 0.80"; if (card) card.className = "force-card lim-fail"; }
+  }
+  stdevMark("chkBlStdev", blStdev);
+  stdevMark("chkPfStdev", pfStdev);
+
+  var forcesPass = checks.length === 0 ? true : checks.every(function (x) { return x; });
+
+  /* Numeric-only verdict (the part HTML can verify) */
+  var numericVerdict;
+  if (!forcesPass)            numericVerdict = "NOT_ACCEPTED";
+  else if (maxStdev > 0.80)   numericVerdict = "NOT_ACCEPTED";
+  else if (maxStdev > 0.50)   numericVerdict = "WARNING";
+  else                        numericVerdict = "VERY_GOOD";
+
+  /* ── NORMALISE AI RESULT ── */
+  var r = result.toLowerCase();
+  var aiVerdict;
+  if (r.indexOf("not accepted") !== -1 || r.indexOf("not_accepted") !== -1) aiVerdict = "NOT_ACCEPTED";
+  else if (r.indexOf("warning") !== -1) aiVerdict = "WARNING";
+  else if (r.indexOf("very good") !== -1 || r.indexOf("very_good") !== -1) aiVerdict = "VERY_GOOD";
+  else aiVerdict = null;
+
+  /* Banner uses AI verdict (it accounts for curve shape); fall back to numeric */
+  var finalVerdict = aiVerdict || numericVerdict;
+
+  /* ── FILL HEADER & META ── */
+  function fill(id, val) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = (val === undefined || val === null || val === "") ? "N/A" : val;
+    if (el.textContent === "N/A") el.classList.add("na");
+  }
+  document.getElementById("hSupplier").textContent = (supplier !== "N/A" && supplier !== "") ? supplier : "—";
+  document.getElementById("hDate").textContent = date;
+  fill("mType", type);
+  fill("mLot", lot);
+  fill("mSupplier", supplier);
+  fill("mOperator", operator);
+  fill("mDate", date);
+  fill("mComment", comment);
+  fill("mReportNo", reportNo);
+  fill("mIsoRef", "ISO 7886-1:2017 / 7886-3:2020 — Annex B");
+  fill("fConductedBy", conductedBy);
+  fill("sLoadScale", loadScale);
+  fill("sTestLength", testLength);
+  fill("sSpeed", speed);
+  fill("sStartFriction", startFric);
+  fill("sStopFriction", stopFric);
+  fill("sMachineId", machineId);
+  fill("sCalibDate", calibDate);
+
+  function showNum(id, v, raw) {
+    document.getElementById(id).textContent = isNaN(v) ? raw : v.toFixed(2);
+  }
+  showNum("fBlMean", blMean, g("bl_mean", "—"));
+  showNum("fBlMax", blMax, g("bl_max", "—"));
+  showNum("fBlStdev", blStdev, g("bl_stdev", "—"));
+  showNum("fPfMean", pfMean, g("pf_mean", "—"));
+  showNum("fPfMax", pfMax, g("pf_max", "—"));
+  showNum("fPfMin", pfMin, g("pf_min", "—"));
+  showNum("fPfStdev", pfStdev, g("pf_stdev", "—"));
+
+  document.getElementById("blLimitLabel").textContent = blLimitLabel;
+  document.getElementById("isoSizeClass").textContent = sizeLabel;
+  document.getElementById("isoLimitText").textContent = limitText;
+
+  /* ── RESULT BANNER ── */
+  var banner = document.getElementById("resultBanner");
+  var icon = document.getElementById("resultIcon");
+  var main = document.getElementById("resultMain");
+  var sub = document.getElementById("resultSub");
+
+  if (finalVerdict === "VERY_GOOD") {
+    banner.className = "result-banner pass";
+    icon.textContent = "\u2705";
+    main.textContent = "Very Good";
+    sub.textContent = "All force values within ISO limits, tight and consistent curve.";
+  } else if (finalVerdict === "WARNING") {
+    banner.className = "result-banner warn";
+    icon.textContent = "\u26A0\uFE0F";
+    main.textContent = "Accepted with Warning";
+    sub.textContent = "Within ISO limits but elevated variability or minor curve irregularity.";
+  } else {
+    banner.className = "result-banner fail";
+    icon.textContent = "\u274C";
+    main.textContent = "Not Accepted";
+    sub.textContent = "Fails ISO limit, Std. Dev. or curve-stability criteria.";
+  }
+
+  /* ── REASON ── */
+  document.getElementById("reasonText").textContent = (reason && reason !== "N/A") ? reason : "No assessment reason was provided.";
+
+  /* ── CROSS-CHECK NOTE: numeric hard-fail but AI did not fail ── */
+  if (numericVerdict === "NOT_ACCEPTED" && aiVerdict && aiVerdict !== "NOT_ACCEPTED") {
+    var dbox = document.getElementById("discrepancyBox");
+    dbox.classList.add("show");
+    document.getElementById("discrepancyText").textContent =
+      "The independent numeric check flags a hard failure (a force value exceeds its ISO limit or Std. Dev. > 0.80 N), " +
+      "but the recorded result is \"" + main.textContent + "\". Please verify the extracted values against the source report before issuing this certificate.";
+  }
+
+  /* ── COMMENT BOX ── */
+  if (comment && comment !== "N/A" && comment !== "") {
+    document.getElementById("commentBox").style.display = "block";
+    document.getElementById("commentText").textContent = comment;
+  }
+
+})();
+</script>
+
+</body>
+</html>
