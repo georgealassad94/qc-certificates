@@ -97,9 +97,27 @@
     .two-col-grid { grid-template-columns: 1fr; }
   }
   @media print {
-    body { margin: 0; }
-    .cert-wrap { border: none; max-width: 100%; }
+    @page { size: A4 portrait; margin: 8mm; }
+    html, body { margin: 0; padding: 0; }
     .no-print { display: none !important; }
+    /* keep everything on a single page */
+    .cert-wrap {
+      border: none;
+      max-width: 100%;
+      transform: scale(0.92);
+      transform-origin: top center;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+    /* don't split these blocks across pages */
+    .cert-header, .result-banner, .two-col-grid, .settings-grid,
+    .force-grid-3, .force-section-title, .iso-ref, .reason-box,
+    .discrepancy, .comment-box, .cert-footer { page-break-inside: avoid; break-inside: avoid; }
+    /* trim vertical spacing a touch when printing */
+    .cert-body { padding: 14px 28px; }
+    .section-label { margin-bottom: 8px; }
+    .force-section-title { margin: 10px 0 6px; }
+    .iso-ref, .reason-box { margin-top: 10px; }
   }
 </style>
 </head>
